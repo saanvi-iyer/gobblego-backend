@@ -19,9 +19,9 @@
 16389||-9223372036854775808|T|G
 16389||16384|T|G
 16389||16387|T|G</Grants>
-      <IntrospectionStateNumber>2050</IntrospectionStateNumber>
+      <IntrospectionStateNumber>3074</IntrospectionStateNumber>
       <ServerVersion>17.4</ServerVersion>
-      <StartupTime>1742822433</StartupTime>
+      <StartupTime>1742824111</StartupTime>
       <TimeZones>true ACDT
 true ACSST
 false ACST
@@ -816,7 +816,7 @@ false Zulu
 13194||10|C|G
 13194||-9223372036854775808|U|G
 13194||10|U|G</Grants>
-      <IntrospectionStateNumber>2050</IntrospectionStateNumber>
+      <IntrospectionStateNumber>3074</IntrospectionStateNumber>
       <ObjectId>16389</ObjectId>
       <OwnerName>neondb_owner</OwnerName>
     </database>
@@ -4263,8 +4263,8 @@ false Zulu
     <schema id="267" parent="2" name="public">
       <Comment>standard public schema</Comment>
       <Current>1</Current>
-      <IntrospectionStateNumber>2050</IntrospectionStateNumber>
-      <LastIntrospectionLocalTimestamp>2025-03-24.13:25:40</LastIntrospectionLocalTimestamp>
+      <IntrospectionStateNumber>3074</IntrospectionStateNumber>
+      <LastIntrospectionLocalTimestamp>2025-03-24.13:50:55</LastIntrospectionLocalTimestamp>
       <ObjectId>2200</ObjectId>
       <StateNumber>531</StateNumber>
       <OwnerName>pg_database_owner</OwnerName>
