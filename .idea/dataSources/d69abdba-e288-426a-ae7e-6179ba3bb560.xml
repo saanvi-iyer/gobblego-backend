@@ -19,9 +19,9 @@
 16389||-9223372036854775808|T|G
 16389||16384|T|G
 16389||16387|T|G</Grants>
-      <IntrospectionStateNumber>3074</IntrospectionStateNumber>
+      <IntrospectionStateNumber>5127</IntrospectionStateNumber>
       <ServerVersion>17.4</ServerVersion>
-      <StartupTime>1742824111</StartupTime>
+      <StartupTime>1743106241</StartupTime>
       <TimeZones>true ACDT
 true ACSST
 false ACST
@@ -816,7 +816,7 @@ false Zulu
 13194||10|C|G
 13194||-9223372036854775808|U|G
 13194||10|U|G</Grants>
-      <IntrospectionStateNumber>3074</IntrospectionStateNumber>
+      <IntrospectionStateNumber>5127</IntrospectionStateNumber>
       <ObjectId>16389</ObjectId>
       <OwnerName>neondb_owner</OwnerName>
     </database>
@@ -4263,15 +4263,15 @@ false Zulu
     <schema id="267" parent="2" name="public">
       <Comment>standard public schema</Comment>
       <Current>1</Current>
-      <IntrospectionStateNumber>3074</IntrospectionStateNumber>
-      <LastIntrospectionLocalTimestamp>2025-03-24.13:50:55</LastIntrospectionLocalTimestamp>
+      <IntrospectionStateNumber>5127</IntrospectionStateNumber>
+      <LastIntrospectionLocalTimestamp>2025-03-27.20:34:36</LastIntrospectionLocalTimestamp>
       <ObjectId>2200</ObjectId>
       <StateNumber>531</StateNumber>
       <OwnerName>pg_database_owner</OwnerName>
     </schema>
     <table id="268" parent="267" name="menus">
       <ObjectId>24576</ObjectId>
-      <StateNumber>2048</StateNumber>
+      <StateNumber>5123</StateNumber>
       <AccessMethodId>2</AccessMethodId>
       <OwnerName>neondb_owner</OwnerName>
     </table>
@@ -4323,7 +4323,13 @@ false Zulu
       <StoredType>text|0s</StoredType>
       <TypeId>25</TypeId>
     </column>
-    <index id="276" parent="268" name="menus_pkey">
+    <column id="276" parent="268" name="images">
+      <Position>8</Position>
+      <StateNumber>5123</StateNumber>
+      <StoredType>text|0s</StoredType>
+      <TypeId>25</TypeId>
+    </column>
+    <index id="277" parent="268" name="menus_pkey">
       <ColNames>item_id</ColNames>
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>24582</ObjectId>
@@ -4335,7 +4341,7 @@ false Zulu
       <CollationIds>100</CollationIds>
       <CollationParentNames>pg_catalog</CollationParentNames>
     </index>
-    <key id="277" parent="268" name="menus_pkey">
+    <key id="278" parent="268" name="menus_pkey">
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>24583</ObjectId>
       <Primary>1</Primary>
