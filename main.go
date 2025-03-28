@@ -12,12 +12,18 @@ import (
 
 func main() {
 	db := config.InitDB()
-	err := db.AutoMigrate(&models.Menu{})
-	if err != nil {
-		log.Fatal("Failed to migrate Menu table:", err)
-	}
-	app := fiber.New()
 
+	err_menu := db.AutoMigrate(&models.Menu{})
+	if err_menu != nil {
+		log.Fatal("Failed to migrate Menu table:", err_menu)
+	}
+
+	err_table := db.AutoMigrate(&models.Table{})
+	if err_table != nil {
+		log.Fatal("Failed to migrate Table table:", err_table)
+	}
+
+	app := fiber.New()
 	app.Use(cors.New(cors.Config{
 		AllowOrigins: "*",
 		AllowMethods: "GET,POST,PUT,DELETE,OPTIONS,PATCH",
