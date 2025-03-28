@@ -5,10 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="d48a11bc-1c6a-438c-b182-2b3314740bcd" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/d69abdba-e288-426a-ae7e-6179ba3bb560.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/d69abdba-e288-426a-ae7e-6179ba3bb560.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/d69abdba-e288-426a-ae7e-6179ba3bb560/storage_v2/_src_/database/neondb.1Hh4wQ/schema/public.abK9xQ.meta" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/d69abdba-e288-426a-ae7e-6179ba3bb560/storage_v2/_src_/database/neondb.1Hh4wQ/schema/public.abK9xQ.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/main.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -22,6 +19,10 @@
   &quot;associatedIndex&quot;: 5
 }</component>
   <component name="ProjectId" id="2ulOWVksm0VQNOY3VSacIYYEkki" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
   <component name="PropertiesComponent">{
   &quot;keyToString&quot;: {
     &quot;RunOnceActivity.OpenDatabaseViewOnStart&quot;: &quot;true&quot;,
