@@ -3,15 +3,7 @@
   <database-model serializer="dbm" dbms="POSTGRES" family-id="POSTGRES" format-version="4.53">
     <root id="1">
       <DateStyle>mdy</DateStyle>
-      <Grants>1||-9223372036854775808|c|G
-1||10|c|G
-1||10|C|G
-1||10|T|G
-4||-9223372036854775808|c|G
-4||10|c|G
-4||10|C|G
-4||10|T|G
-16389||-9223372036854775808|c|G
+      <Grants>16389||-9223372036854775808|c|G
 16389||16384|c|G
 16389||16387|c|G
 16389||16384|C|G
@@ -19,9 +11,9 @@
 16389||-9223372036854775808|T|G
 16389||16384|T|G
 16389||16387|T|G</Grants>
-      <IntrospectionStateNumber>5127</IntrospectionStateNumber>
+      <IntrospectionStateNumber>10241</IntrospectionStateNumber>
       <ServerVersion>17.4</ServerVersion>
-      <StartupTime>1743106241</StartupTime>
+      <StartupTime>1743165842</StartupTime>
       <TimeZones>true ACDT
 true ACSST
 false ACST
@@ -324,7 +316,7 @@ false Asia/Irkutsk
 false Asia/Istanbul
 false Asia/Jakarta
 false Asia/Jayapura
-false Asia/Jerusalem
+true Asia/Jerusalem
 false Asia/Kabul
 false Asia/Kamchatka
 false Asia/Karachi
@@ -367,7 +359,7 @@ false Asia/Taipei
 false Asia/Tashkent
 false Asia/Tbilisi
 false Asia/Tehran
-false Asia/Tel_Aviv
+true Asia/Tel_Aviv
 false Asia/Thimbu
 false Asia/Thimphu
 false Asia/Tokyo
@@ -619,7 +611,7 @@ false Indian/Mauritius
 false Indian/Mayotte
 false Indian/Reunion
 false Iran
-false Israel
+true Israel
 false JAYT
 false JST
 false Jamaica
@@ -816,7 +808,7 @@ false Zulu
 13194||10|C|G
 13194||-9223372036854775808|U|G
 13194||10|U|G</Grants>
-      <IntrospectionStateNumber>5127</IntrospectionStateNumber>
+      <IntrospectionStateNumber>10241</IntrospectionStateNumber>
       <ObjectId>16389</ObjectId>
       <OwnerName>neondb_owner</OwnerName>
     </database>
@@ -4263,8 +4255,8 @@ false Zulu
     <schema id="267" parent="2" name="public">
       <Comment>standard public schema</Comment>
       <Current>1</Current>
-      <IntrospectionStateNumber>5127</IntrospectionStateNumber>
-      <LastIntrospectionLocalTimestamp>2025-03-27.20:34:36</LastIntrospectionLocalTimestamp>
+      <IntrospectionStateNumber>10241</IntrospectionStateNumber>
+      <LastIntrospectionLocalTimestamp>2025-03-28.12:48:31</LastIntrospectionLocalTimestamp>
       <ObjectId>2200</ObjectId>
       <StateNumber>531</StateNumber>
       <OwnerName>pg_database_owner</OwnerName>

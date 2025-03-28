@@ -8,8 +8,9 @@
       <change beforePath="$PROJECT_DIR$/.idea/dataSources/d69abdba-e288-426a-ae7e-6179ba3bb560.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/d69abdba-e288-426a-ae7e-6179ba3bb560.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/dataSources/d69abdba-e288-426a-ae7e-6179ba3bb560/storage_v2/_src_/database/neondb.1Hh4wQ/schema/public.abK9xQ.meta" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/d69abdba-e288-426a-ae7e-6179ba3bb560/storage_v2/_src_/database/neondb.1Hh4wQ/schema/public.abK9xQ.meta" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/api/menu.go" beforeDir="false" afterPath="$PROJECT_DIR$/api/menu.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/menu.go" beforeDir="false" afterPath="$PROJECT_DIR$/models/menu.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/main.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/menu/postgres.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/menu/repository.go" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -28,7 +29,7 @@
     &quot;RunOnceActivity.OpenDatabaseViewOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/saanv&quot;
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/saanv/OneDrive/Documents/VIT/VS Code/gobblego-backend&quot;
   },
   &quot;keyToStringList&quot;: {
     &quot;DatabaseDriversLRU&quot;: [

@@ -1,13 +1,13 @@
 package main
 
 import (
-    "log"
-    "github.com/saanvi-iyer/gobblego-backend/api"
-    "github.com/saanvi-iyer/gobblego-backend/config"
-    "github.com/saanvi-iyer/gobblego-backend/models"
-    "github.com/saanvi-iyer/gobblego-backend/routes"
-    "github.com/gofiber/fiber/v2"
-    "github.com/gofiber/fiber/v2/middleware/cors"
+	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
+	"github.com/saanvi-iyer/gobblego-backend/api"
+	"github.com/saanvi-iyer/gobblego-backend/config"
+	"github.com/saanvi-iyer/gobblego-backend/models"
+	"github.com/saanvi-iyer/gobblego-backend/routes"
+	"log"
 )
 
 func main() {
@@ -25,16 +25,17 @@ func main() {
 	}))
 
 	MenuHandler := api.NewMenuHandler(db.DB)
+	routes.MountMenuRoutes(app, MenuHandler)
+
+	TableHandler := api.NewTableHandler(db.DB)
+	routes.MountTableRoutes(app, TableHandler)
 
 	app.Get("/ping", func(c *fiber.Ctx) error {
 		return c.JSON(fiber.Map{"message": "Pong", "status": 200})
 	})
-
-	routes.MountMenuRoutes(app, MenuHandler)
 
 	log.Println("Starting server on :8080...")
 	if err := app.Listen(":8080"); err != nil {
 		log.Fatal("Failed to start server:", err)
 	}
 }
-
