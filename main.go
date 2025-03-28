@@ -23,6 +23,11 @@ func main() {
 		log.Fatal("Failed to migrate Table table:", err_table)
 	}
 
+	err_user := db.AutoMigrate(&models.User{})
+	if err_user != nil {
+		log.Fatal("Failed to migrate User table:", err_user)
+	}
+
 	app := fiber.New()
 	app.Use(cors.New(cors.Config{
 		AllowOrigins: "*",
@@ -35,6 +40,9 @@ func main() {
 
 	TableHandler := api.NewTableHandler(db.DB)
 	routes.MountTableRoutes(app, TableHandler)
+
+	UserHandler := api.NewUserHandler(db.DB)
+	routes.MountUserRoutes(app, UserHandler)
 
 	app.Get("/ping", func(c *fiber.Ctx) error {
 		return c.JSON(fiber.Map{"message": "Pong", "status": 200})

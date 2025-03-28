@@ -3,7 +3,15 @@
   <database-model serializer="dbm" dbms="POSTGRES" family-id="POSTGRES" format-version="4.53">
     <root id="1">
       <DateStyle>mdy</DateStyle>
-      <Grants>16389||-9223372036854775808|c|G
+      <Grants>1||-9223372036854775808|c|G
+1||10|c|G
+1||10|C|G
+1||10|T|G
+4||-9223372036854775808|c|G
+4||10|c|G
+4||10|C|G
+4||10|T|G
+16389||-9223372036854775808|c|G
 16389||16384|c|G
 16389||16387|c|G
 16389||16384|C|G
@@ -11,9 +19,9 @@
 16389||-9223372036854775808|T|G
 16389||16384|T|G
 16389||16387|T|G</Grants>
-      <IntrospectionStateNumber>10241</IntrospectionStateNumber>
+      <IntrospectionStateNumber>11264</IntrospectionStateNumber>
       <ServerVersion>17.4</ServerVersion>
-      <StartupTime>1743165842</StartupTime>
+      <StartupTime>1743168679</StartupTime>
       <TimeZones>true ACDT
 true ACSST
 false ACST
@@ -808,7 +816,7 @@ false Zulu
 13194||10|C|G
 13194||-9223372036854775808|U|G
 13194||10|U|G</Grants>
-      <IntrospectionStateNumber>10241</IntrospectionStateNumber>
+      <IntrospectionStateNumber>11264</IntrospectionStateNumber>
       <ObjectId>16389</ObjectId>
       <OwnerName>neondb_owner</OwnerName>
     </database>
@@ -4255,8 +4263,8 @@ false Zulu
     <schema id="267" parent="2" name="public">
       <Comment>standard public schema</Comment>
       <Current>1</Current>
-      <IntrospectionStateNumber>10241</IntrospectionStateNumber>
-      <LastIntrospectionLocalTimestamp>2025-03-28.12:48:31</LastIntrospectionLocalTimestamp>
+      <IntrospectionStateNumber>11264</IntrospectionStateNumber>
+      <LastIntrospectionLocalTimestamp>2025-03-28.13:31:53</LastIntrospectionLocalTimestamp>
       <ObjectId>2200</ObjectId>
       <StateNumber>531</StateNumber>
       <OwnerName>pg_database_owner</OwnerName>
@@ -4267,61 +4275,73 @@ false Zulu
       <AccessMethodId>2</AccessMethodId>
       <OwnerName>neondb_owner</OwnerName>
     </table>
-    <column id="269" parent="268" name="item_id">
+    <table id="269" parent="267" name="tables">
+      <ObjectId>32768</ObjectId>
+      <StateNumber>10242</StateNumber>
+      <AccessMethodId>2</AccessMethodId>
+      <OwnerName>neondb_owner</OwnerName>
+    </table>
+    <table id="270" parent="267" name="users">
+      <ObjectId>40960</ObjectId>
+      <StateNumber>11265</StateNumber>
+      <AccessMethodId>2</AccessMethodId>
+      <OwnerName>neondb_owner</OwnerName>
+    </table>
+    <column id="271" parent="268" name="item_id">
       <NotNull>1</NotNull>
       <Position>1</Position>
       <StateNumber>2048</StateNumber>
       <StoredType>text|0s</StoredType>
       <TypeId>25</TypeId>
     </column>
-    <column id="270" parent="268" name="item_name">
+    <column id="272" parent="268" name="item_name">
       <NotNull>1</NotNull>
       <Position>2</Position>
       <StateNumber>2048</StateNumber>
       <StoredType>text|0s</StoredType>
       <TypeId>25</TypeId>
     </column>
-    <column id="271" parent="268" name="price">
+    <column id="273" parent="268" name="price">
       <NotNull>1</NotNull>
       <Position>3</Position>
       <StateNumber>2048</StateNumber>
       <StoredType>numeric|0s</StoredType>
       <TypeId>1700</TypeId>
     </column>
-    <column id="272" parent="268" name="is_available">
+    <column id="274" parent="268" name="is_available">
       <DefaultExpression>true</DefaultExpression>
       <Position>4</Position>
       <StateNumber>2048</StateNumber>
       <StoredType>boolean|0s</StoredType>
       <TypeId>16</TypeId>
     </column>
-    <column id="273" parent="268" name="category">
+    <column id="275" parent="268" name="category">
       <NotNull>1</NotNull>
       <Position>5</Position>
       <StateNumber>2048</StateNumber>
       <StoredType>text|0s</StoredType>
       <TypeId>25</TypeId>
     </column>
-    <column id="274" parent="268" name="est_prep_time">
+    <column id="276" parent="268" name="est_prep_time">
       <NotNull>1</NotNull>
       <Position>6</Position>
       <StateNumber>2048</StateNumber>
       <StoredType>bigint|0s</StoredType>
       <TypeId>20</TypeId>
     </column>
-    <column id="275" parent="268" name="description">
+    <column id="277" parent="268" name="description">
       <Position>7</Position>
       <StateNumber>2048</StateNumber>
       <StoredType>text|0s</StoredType>
       <TypeId>25</TypeId>
     </column>
-    <column id="276" parent="268" name="images">
+    <column id="278" parent="268" name="images">
       <Position>8</Position>
       <StateNumber>5123</StateNumber>
       <StoredType>text|0s</StoredType>
       <TypeId>25</TypeId>
     </column>
-    <index id="277" parent="268" name="menus_pkey">
+    <index id="279" parent="268" name="menus_pkey">
       <ColNames>item_id</ColNames>
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>24582</ObjectId>
@@ -4333,12 +4353,110 @@ false Zulu
       <CollationIds>100</CollationIds>
       <CollationParentNames>pg_catalog</CollationParentNames>
     </index>
-    <key id="278" parent="268" name="menus_pkey">
+    <key id="280" parent="268" name="menus_pkey">
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>24583</ObjectId>
       <Primary>1</Primary>
       <StateNumber>2048</StateNumber>
       <UnderlyingIndexId>24582</UnderlyingIndexId>
+    </key>
+    <column id="281" parent="269" name="table_id">
+      <NotNull>1</NotNull>
+      <Position>1</Position>
+      <StateNumber>10242</StateNumber>
+      <StoredType>text|0s</StoredType>
+      <TypeId>25</TypeId>
+    </column>
+    <column id="282" parent="269" name="payment_status">
+      <NotNull>1</NotNull>
+      <Position>2</Position>
+      <StateNumber>10242</StateNumber>
+      <StoredType>text|0s</StoredType>
+      <TypeId>25</TypeId>
+    </column>
+    <column id="283" parent="269" name="bill_amount">
+      <NotNull>1</NotNull>
+      <Position>3</Position>
+      <StateNumber>10242</StateNumber>
+      <StoredType>numeric|0s</StoredType>
+      <TypeId>1700</TypeId>
+    </column>
+    <index id="284" parent="269" name="tables_pkey">
+      <ColNames>table_id</ColNames>
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>32773</ObjectId>
+      <Primary>1</Primary>
+      <StateNumber>10242</StateNumber>
+      <Unique>1</Unique>
+      <AccessMethodId>403</AccessMethodId>
+      <CollationNames>default</CollationNames>
+      <CollationIds>100</CollationIds>
+      <CollationParentNames>pg_catalog</CollationParentNames>
+    </index>
+    <key id="285" parent="269" name="tables_pkey">
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>32774</ObjectId>
+      <Primary>1</Primary>
+      <StateNumber>10242</StateNumber>
+      <UnderlyingIndexId>32773</UnderlyingIndexId>
+    </key>
+    <column id="286" parent="270" name="user_id">
+      <NotNull>1</NotNull>
+      <Position>1</Position>
+      <StateNumber>11265</StateNumber>
+      <StoredType>text|0s</StoredType>
+      <TypeId>25</TypeId>
+    </column>
+    <column id="287" parent="270" name="table_id">
+      <Position>2</Position>
+      <StateNumber>11265</StateNumber>
+      <StoredType>uuid|0s</StoredType>
+      <TypeId>2950</TypeId>
+    </column>
+    <column id="288" parent="270" name="is_leader">
+      <DefaultExpression>false</DefaultExpression>
+      <Position>3</Position>
+      <StateNumber>11265</StateNumber>
+      <StoredType>boolean|0s</StoredType>
+      <TypeId>16</TypeId>
+    </column>
+    <column id="289" parent="270" name="created_at">
+      <Position>4</Position>
+      <StateNumber>11265</StateNumber>
+      <StoredType>timestamp with time zone|0s</StoredType>
+      <TypeId>1184</TypeId>
+    </column>
+    <column id="290" parent="270" name="user_name">
+      <NotNull>1</NotNull>
+      <Position>5</Position>
+      <StateNumber>11265</StateNumber>
+      <StoredType>text|0s</StoredType>
+      <TypeId>25</TypeId>
+    </column>
+    <index id="291" parent="270" name="users_pkey">
+      <ColNames>user_id</ColNames>
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>40966</ObjectId>
+      <Primary>1</Primary>
+      <StateNumber>11265</StateNumber>
+      <Unique>1</Unique>
+      <AccessMethodId>403</AccessMethodId>
+      <CollationNames>default</CollationNames>
+      <CollationIds>100</CollationIds>
+      <CollationParentNames>pg_catalog</CollationParentNames>
+    </index>
+    <index id="292" parent="270" name="idx_users_table_id">
+      <ColNames>table_id</ColNames>
+      <ObjectId>40968</ObjectId>
+      <StateNumber>11266</StateNumber>
+      <AccessMethodId>403</AccessMethodId>
+    </index>
+    <key id="293" parent="270" name="users_pkey">
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>40967</ObjectId>
+      <Primary>1</Primary>
+      <StateNumber>11265</StateNumber>
+      <UnderlyingIndexId>40966</UnderlyingIndexId>
     </key>
   </database-model>
 </dataSource>
