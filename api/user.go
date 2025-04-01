@@ -1,58 +1,78 @@
 package api
 
 import (
-	"github.com/gofiber/fiber/v2"
-	"github.com/google/uuid"
-	"github.com/saanvi-iyer/gobblego-backend/models"
-	"gorm.io/gorm"
+    "github.com/gofiber/fiber/v2"
+    "github.com/google/uuid"
+    "github.com/saanvi-iyer/gobblego-backend/models"
+    "gorm.io/gorm"
 )
 
 type UserHandler struct {
-	DB *gorm.DB
+    DB          *gorm.DB
+    CartHandler *CartHandler 
 }
 
-func NewUserHandler(db *gorm.DB) *UserHandler {
-	return &UserHandler{DB: db}
+func NewUserHandler(db *gorm.DB, cartHandler *CartHandler) *UserHandler {
+    return &UserHandler{
+        DB:          db,
+        CartHandler: cartHandler,
+    }
 }
 
-func (h *UserHandler) JoinTable(c *fiber.Ctx) error {
-	type JoinRequest struct {
-		TableID  string `json:"table_id"`
-		UserName string `json:"user_name"`
-	}
-	
-	var req JoinRequest
-	if err := c.BodyParser(&req); err != nil {
-		return c.Status(400).JSON(fiber.Map{"error": "Invalid input"})
-	}
+func (h *UserHandler) JoinCart(c *fiber.Ctx) error {
+    type JoinRequest struct {
+        CartID   string `json:"cart_id"`
+        UserName string `json:"user_name"`
+    }
+    
+    var req JoinRequest
+    if err := c.BodyParser(&req); err != nil {
+        return c.Status(400).JSON(fiber.Map{"error": "Invalid input"})
+    }
 
-	tid, err := uuid.Parse(req.TableID)
-	if err != nil {
-		return c.Status(400).JSON(fiber.Map{"error": "Invalid table ID"})
-	}
+    cid, err := uuid.Parse(req.CartID)
+    if err != nil {
+        return c.Status(400).JSON(fiber.Map{"error": "Invalid cart ID"})
+    }
 
-	var userCount int64
-	h.DB.Model(&models.User{}).Where("table_id = ?", tid).Count(&userCount)
+    var cart models.Cart
+    if err := h.DB.First(&cart, "cart_id = ?", cid).Error; err != nil {
+        if err == gorm.ErrRecordNotFound {
+            newCart := models.Cart{
+                CartID:        cid,
+                PaymentStatus: "pending", 
+                BillAmount:    0.0,   
+            }
+            if err := h.DB.Create(&newCart).Error; err != nil {
+                return c.Status(500).JSON(fiber.Map{"error": "Failed to create cart"})
+            }
+        } else {
+            return c.Status(500).JSON(fiber.Map{"error": "Failed to check cart existence"})
+        }
+    }
 
-	user := models.User{
-		UserID:   uuid.New(),
-		TableID:  tid,
-		UserName: req.UserName,
-		IsLeader: userCount == 0,
-	}
+    var userCount int64
+    h.DB.Model(&models.User{}).Where("cart_id = ?", cid).Count(&userCount)
 
-	if err := h.DB.Create(&user).Error; err != nil {
-		return c.Status(500).JSON(fiber.Map{"error": "Failed to join table"})
-	}
+    user := models.User{
+        UserID:    uuid.New(),
+        CartID:    cid,
+        UserName:  req.UserName,
+        IsLeader:  userCount == 0,
+    }
 
-	return c.Status(201).JSON(user)
+    if err := h.DB.Create(&user).Error; err != nil {
+        return c.Status(500).JSON(fiber.Map{"error": "Failed to join Cart"})
+    }
+
+    return c.Status(201).JSON(user)
 }
 
-func (h *UserHandler) GetTableUsers(c *fiber.Ctx) error {
-	tableID := c.Params("table_id")
-	var users []models.User
-	if err := h.DB.Where("table_id = ?", tableID).Find(&users).Error; err != nil {
-		return c.Status(500).JSON(fiber.Map{"error": "Failed to fetch users"})
-	}
-	return c.JSON(users)
+func (h *UserHandler) GetCartUsers(c *fiber.Ctx) error {
+    cartID := c.Params("cart_id")
+    var users []models.User
+    if err := h.DB.Where("cart_id = ?", cartID).Find(&users).Error; err != nil {
+        return c.Status(500).JSON(fiber.Map{"error": "Failed to fetch users"})
+    }
+    return c.JSON(users)
 }

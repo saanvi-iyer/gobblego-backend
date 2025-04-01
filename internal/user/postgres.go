@@ -29,9 +29,9 @@ func (r *userRepo) GetUserByID(db *gorm.DB, id string) (*models.User, error) {
 	return &user, err
 }
 
-func (r *userRepo) GetUsersByTableID(db *gorm.DB, tableID string) ([]models.User, error) {
+func (r *userRepo) GetUsersByCartID(db *gorm.DB, cartID string) ([]models.User, error) {
 	var users []models.User
-	tid, err := uuid.Parse(tableID)
+	tid, err := uuid.Parse(cartID)
 	if err != nil {
 		return nil, err
 	}
@@ -39,8 +39,8 @@ func (r *userRepo) GetUsersByTableID(db *gorm.DB, tableID string) ([]models.User
 	return users, err
 }
 
-func (r *userRepo) SetLeader(db *gorm.DB, userID, tableID string) error {
-	tid, err := uuid.Parse(tableID)
+func (r *userRepo) SetLeader(db *gorm.DB, userID, cartID string) error {
+	tid, err := uuid.Parse(cartID)
 	if err != nil {
 		return err
 	}

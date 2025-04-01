@@ -1,4 +1,4 @@
-# GobbleGo
+# GobbleGo Backend
 
 ## Overview
 GobbleGo revolutionizes restaurant dining by integrating a collaborative ordering system that enhances group dining experiences. Each table is uniquely identified with a QR code, ensuring easy access to a shared digital ordering platform. Guests can view the menu, place individual orders, and organize checkout and billing in a streamlined manner.
@@ -25,8 +25,6 @@ GobbleGo revolutionizes restaurant dining by integrating a collaborative orderin
 
 ### 5. Billing and Payment
 - Once dining concludes, all checkout orders are summed up for a final bill.
-
-## GobbleGo Backend
 
 ### Tech Stack
 - **GoFiber** - High-performance web framework in Golang
@@ -67,5 +65,7 @@ GobbleGo revolutionizes restaurant dining by integrating a collaborative orderin
    ```sh
    go run main.go
    ```
+## Connecting to Backend
+Ensure your frontend is running by following the setup steps in the **[GobbleGo Frontend Repository](https://github.com/saanvi-iyer/gobblego/frontend)**.
 ---
 <p align="center">Made with ❤️ by Saanvi Iyer</p>

@@ -1,32 +1,17 @@
 package main
 
 import (
+	"log"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/saanvi-iyer/gobblego-backend/api"
 	"github.com/saanvi-iyer/gobblego-backend/config"
-	"github.com/saanvi-iyer/gobblego-backend/models"
 	"github.com/saanvi-iyer/gobblego-backend/routes"
-	"log"
 )
 
 func main() {
 	db := config.InitDB()
-
-	err_menu := db.AutoMigrate(&models.Menu{})
-	if err_menu != nil {
-		log.Fatal("Failed to migrate Menu table:", err_menu)
-	}
-
-	err_table := db.AutoMigrate(&models.Table{})
-	if err_table != nil {
-		log.Fatal("Failed to migrate Table table:", err_table)
-	}
-
-	err_user := db.AutoMigrate(&models.User{})
-	if err_user != nil {
-		log.Fatal("Failed to migrate User table:", err_user)
-	}
 
 	app := fiber.New()
 	app.Use(cors.New(cors.Config{
@@ -38,10 +23,10 @@ func main() {
 	MenuHandler := api.NewMenuHandler(db.DB)
 	routes.MountMenuRoutes(app, MenuHandler)
 
-	TableHandler := api.NewTableHandler(db.DB)
-	routes.MountTableRoutes(app, TableHandler)
+	CartHandler := api.NewCartHandler(db.DB)
+	routes.MountCartRoutes(app, CartHandler)
 
-	UserHandler := api.NewUserHandler(db.DB)
+	UserHandler := api.NewUserHandler(db.DB, CartHandler)
 	routes.MountUserRoutes(app, UserHandler)
 
 	app.Get("/ping", func(c *fiber.Ctx) error {
