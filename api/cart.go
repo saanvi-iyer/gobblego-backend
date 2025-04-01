@@ -73,14 +73,12 @@ func (h *CartHandler) AddToCart(c *fiber.Ctx) error {
 	var user models.User
 	if err := h.DB.Where("user_id = ?", req.UserID).First(&user).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
-
 			return c.Status(404).JSON(fiber.Map{"error": "User not found"})
 		}
 		return c.Status(500).JSON(fiber.Map{"error": "Failed to fetch user"})
 	}
 
 	if user.CartID == uuid.Nil {
-
 		newCart := models.Cart{
 			PaymentStatus: "pending",
 			BillAmount:    0.0,
@@ -97,15 +95,110 @@ func (h *CartHandler) AddToCart(c *fiber.Ctx) error {
 		}
 	}
 
-	item := models.CartItem{
-		ItemID:   req.ItemID,
-		UserID:   req.UserID,
-		Quantity: req.Quantity,
+	var cart models.Cart
+	if err := h.DB.Where("cart_id = ?", user.CartID).First(&cart).Error; err != nil {
+		return c.Status(500).JSON(fiber.Map{"error": "Failed to fetch cart"})
 	}
 
-	if err := h.Repo.AddToCart(h.DB, user.CartID, &item); err != nil {
-		return c.Status(500).JSON(fiber.Map{"error": "Failed to add item to cart: " + err.Error()})
+	var items []models.CartItem
+	if len(cart.Items) > 0 {
+		if err := json.Unmarshal(cart.Items, &items); err != nil {
+			return c.Status(500).JSON(fiber.Map{"error": "Failed to parse cart items"})
+		}
 	}
 
-	return c.Status(201).JSON(fiber.Map{"message": "Item added to cart"})
+	itemExists := false
+	for i := range items {
+		if items[i].ItemID == req.ItemID && items[i].UserID == req.UserID {
+
+			items[i].Quantity += req.Quantity
+			itemExists = true
+			break
+		}
+	}
+
+	if !itemExists {
+		newItem := models.CartItem{
+			ItemID:   req.ItemID,
+			UserID:   req.UserID,
+			Quantity: req.Quantity,
+		}
+		items = append(items, newItem)
+	}
+
+	updatedItems, err := json.Marshal(items)
+	if err != nil {
+		return c.Status(500).JSON(fiber.Map{"error": "Failed to update cart items"})
+	}
+
+	cart.Items = updatedItems
+	if err := h.DB.Save(&cart).Error; err != nil {
+		return c.Status(500).JSON(fiber.Map{"error": "Failed to save updated cart"})
+	}
+
+	return c.Status(201).JSON(fiber.Map{"message": "Item added/updated in cart"})
+}
+
+func (h *CartHandler) UpdateCartItem(c *fiber.Ctx) error {
+
+	var req struct {
+		ItemID   uuid.UUID `json:"item_id"`
+		Quantity int       `json:"quantity"`
+		UserID   uuid.UUID `json:"user_id"`
+	}
+
+	if err := c.BodyParser(&req); err != nil {
+		return c.Status(400).JSON(fiber.Map{"error": "Invalid input"})
+	}
+
+	var user models.User
+	if err := h.DB.Where("user_id = ?", req.UserID).First(&user).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return c.Status(404).JSON(fiber.Map{"error": "User not found"})
+		}
+		return c.Status(500).JSON(fiber.Map{"error": "Failed to fetch user"})
+	}
+
+	var cart models.Cart
+	if err := h.DB.Where("cart_id = ?", user.CartID).First(&cart).Error; err != nil {
+		return c.Status(500).JSON(fiber.Map{"error": "Failed to fetch cart"})
+	}
+
+	var items []models.CartItem
+	if len(cart.Items) > 0 {
+		if err := json.Unmarshal(cart.Items, &items); err != nil {
+			return c.Status(500).JSON(fiber.Map{"error": "Failed to parse cart items"})
+		}
+	}
+
+	itemFound := false
+	for i := range items {
+		if items[i].ItemID == req.ItemID && items[i].UserID == req.UserID {
+			itemFound = true
+			if req.Quantity > 0 {
+
+				items[i].Quantity = req.Quantity
+			} else {
+
+				items = append(items[:i], items[i+1:]...)
+			}
+			break
+		}
+	}
+
+	if !itemFound {
+		return c.Status(404).JSON(fiber.Map{"error": "Item not found in cart"})
+	}
+
+	updatedItems, err := json.Marshal(items)
+	if err != nil {
+		return c.Status(500).JSON(fiber.Map{"error": "Failed to update cart items"})
+	}
+
+	cart.Items = updatedItems
+	if err := h.DB.Save(&cart).Error; err != nil {
+		return c.Status(500).JSON(fiber.Map{"error": "Failed to save updated cart"})
+	}
+
+	return c.Status(200).JSON(fiber.Map{"message": "Cart item updated"})
 }
