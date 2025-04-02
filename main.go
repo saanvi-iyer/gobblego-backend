@@ -29,6 +29,9 @@ func main() {
 	UserHandler := api.NewUserHandler(db.DB, CartHandler)
 	routes.MountUserRoutes(app, UserHandler)
 
+	orderHandler := api.NewOrderHandler(db.DB)
+	routes.MountOrderRoutes(app, orderHandler)
+
 	app.Get("/ping", func(c *fiber.Ctx) error {
 		return c.JSON(fiber.Map{"message": "Pong", "status": 200})
 	})
