@@ -31,7 +31,6 @@ func NewCartHandler(db *gorm.DB) *CartHandler {
 		Repo: cart.NewCartRepo(),
 	}
 }
-
 func (h *CartHandler) GetAllCarts(c *fiber.Ctx) error {
 	var carts []models.Cart
 	if err := h.DB.Find(&carts).Error; err != nil {
@@ -40,15 +39,36 @@ func (h *CartHandler) GetAllCarts(c *fiber.Ctx) error {
 
 	for i, cart := range carts {
 		var items []models.CartItem
-		if err := json.Unmarshal(cart.Items, &items); err != nil {
-
-			var item models.CartItem
-			if err := json.Unmarshal(cart.Items, &item); err != nil {
+		if len(cart.Items) > 0 {
+			if err := json.Unmarshal(cart.Items, &items); err != nil {
 				return c.Status(500).JSON(fiber.Map{"error": "Failed to parse cart items"})
 			}
-			items = append(items, item)
 		}
-		if newItems, err := json.Marshal(items); err != nil {
+
+		var enrichedItems []fiber.Map
+		for _, item := range items {
+			var menuItem models.Menu
+			if err := h.DB.Where("item_id = ?", item.ItemID).First(&menuItem).Error; err != nil {
+				return c.Status(500).JSON(fiber.Map{"error": "Failed to fetch item details"})
+			}
+
+			var user models.User
+			if err := h.DB.Where("user_id = ?", item.UserID).First(&user).Error; err != nil {
+				return c.Status(500).JSON(fiber.Map{"error": "Failed to fetch user details"})
+			}
+
+			enrichedItems = append(enrichedItems, fiber.Map{
+				"item_id":   item.ItemID,
+				"item_name": menuItem.ItemName,
+				"image":     menuItem.Images,
+				"price":     menuItem.Price,
+				"quantity":  item.Quantity,
+				"user_id":   item.UserID,
+				"user_name": user.UserName,
+			})
+		}
+
+		if newItems, err := json.Marshal(enrichedItems); err != nil {
 			return c.Status(500).JSON(fiber.Map{"error": "Failed to marshal cart items"})
 		} else {
 			carts[i].Items = newItems
