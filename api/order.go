@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/json"
+	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
@@ -24,34 +25,52 @@ func NewOrderHandler(db *gorm.DB) *OrderHandler {
 }
 
 type CreateOrderRequest struct {
-	CartID string `json:"cart_id"`
+	Items []models.CartItem `json:"items"`
 }
 
 func (h *OrderHandler) CreateOrder(c *fiber.Ctx) error {
-	var req CreateOrderRequest
+	var req struct {
+		CartID string `json:"cart_id"`
+	}
+
+	// Parse request body
 	if err := c.BodyParser(&req); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid request"})
 	}
 
+	// Validate cart ID format
 	cartUUID, err := uuid.Parse(req.CartID)
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid cart ID format"})
 	}
 
-	cartIDsJSON, err := json.Marshal([]uuid.UUID{cartUUID})
-	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Failed to process cart IDs"})
+	// Fetch cart from DB
+	var cart models.Cart
+	if err := h.DB.First(&cart, "cart_id = ?", cartUUID).Error; err != nil {
+		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{"error": "Cart not found"})
 	}
 
+	// Create order with cart items
 	order := models.Order{
 		OrderID:     uuid.New(),
-		CartIDs:     cartIDsJSON,
+		CartID:      cartUUID,
+		Items:       cart.Items, // Copy cart items into order
 		OrderStatus: "pending",
+		CreatedAt:   time.Now(),
+		UpdatedAt:   time.Now(),
 	}
 
-	err = h.Repo.CreateOrder(h.DB, &order)
-	if err != nil {
+	// Save order to DB
+	if err := h.Repo.CreateOrder(h.DB, &order); err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Failed to create order"})
+	}
+
+	// Clear cart items but keep cart_id, payment_status, and bill_amount intact
+	emptyJSON, _ := json.Marshal([]models.CartItem{}) // Empty cart items
+	cart.Items = emptyJSON
+
+	if err := h.DB.Save(&cart).Error; err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Failed to clear cart items"})
 	}
 
 	return c.Status(fiber.StatusCreated).JSON(fiber.Map{"order_id": order.OrderID})
