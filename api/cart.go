@@ -47,14 +47,12 @@ func (h *CartHandler) GetAllCarts(c *fiber.Ctx) error {
 			}
 		}
 
-		// Collect all user IDs across all items
 		var allUserIDs []uuid.UUID
 		for _, item := range items {
 			allUserIDs = append(allUserIDs, item.UserIDs...)
 		}
 		allUserIDs = uniqueUUIDs(allUserIDs)
 
-		// Fetch all related users in a single query
 		var users []models.User
 		if len(allUserIDs) > 0 {
 			if err := h.DB.Where("user_id IN ?", allUserIDs).Find(&users).Error; err != nil {
@@ -62,7 +60,6 @@ func (h *CartHandler) GetAllCarts(c *fiber.Ctx) error {
 			}
 		}
 
-		// Map userID → userName
 		idToUsername := make(map[uuid.UUID]string)
 		for _, u := range users {
 			idToUsername[u.UserID] = u.UserName
@@ -75,7 +72,6 @@ func (h *CartHandler) GetAllCarts(c *fiber.Ctx) error {
 				return c.Status(500).JSON(fiber.Map{"error": "Failed to fetch item details"})
 			}
 
-			// Map user IDs to names for this item
 			var usernames []string
 			for _, uid := range item.UserIDs {
 				if name, ok := idToUsername[uid]; ok {
@@ -94,7 +90,6 @@ func (h *CartHandler) GetAllCarts(c *fiber.Ctx) error {
 			})
 		}
 
-		// Replace raw items with enriched version
 		if newItems, err := json.Marshal(enrichedItems); err != nil {
 			return c.Status(500).JSON(fiber.Map{"error": "Failed to marshal cart items"})
 		} else {
@@ -156,7 +151,7 @@ func (h *CartHandler) AddToCart(c *fiber.Ctx) error {
 	itemExists := false
 	for i := range items {
 		if items[i].ItemID == req.ItemID {
-			// If user already exists in this item
+
 			userAlreadyIn := false
 			for _, uid := range items[i].UserIDs {
 				if uid == req.UserID {
@@ -164,11 +159,11 @@ func (h *CartHandler) AddToCart(c *fiber.Ctx) error {
 					break
 				}
 			}
-			// Add user if not already in list
+
 			if !userAlreadyIn {
 				items[i].UserIDs = append(items[i].UserIDs, req.UserID)
 			}
-			// Update quantity
+
 			items[i].Quantity += req.Quantity
 			itemExists = true
 			break
@@ -253,7 +248,6 @@ func (h *CartHandler) UpdateCartItem(c *fiber.Ctx) error {
 		}
 	}
 
-	// If item not found and quantity > 0, create new one with this user as first contributor
 	if !itemFound && req.Quantity > 0 {
 		newItem := models.CartItem{
 			ItemID:   req.ItemID,
@@ -263,7 +257,6 @@ func (h *CartHandler) UpdateCartItem(c *fiber.Ctx) error {
 		items = append(items, newItem)
 	}
 
-	// Save back to DB
 	updatedItems, err := json.Marshal(items)
 	if err != nil {
 		return c.Status(500).JSON(fiber.Map{"error": "Failed to marshal cart items"})
@@ -274,7 +267,6 @@ func (h *CartHandler) UpdateCartItem(c *fiber.Ctx) error {
 		return c.Status(500).JSON(fiber.Map{"error": "Failed to save updated cart"})
 	}
 
-	// Resolve all user IDs to usernames
 	var allUserIDs []uuid.UUID
 	for _, item := range items {
 		allUserIDs = append(allUserIDs, item.UserIDs...)
@@ -291,7 +283,6 @@ func (h *CartHandler) UpdateCartItem(c *fiber.Ctx) error {
 		idToUsername[u.UserID] = u.UserName
 	}
 
-	// Response
 	type itemResponse struct {
 		ItemID    uuid.UUID   `json:"item_id"`
 		Quantity  int         `json:"quantity"`
