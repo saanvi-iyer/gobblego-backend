@@ -31,7 +31,7 @@ func (h *MenuHandler) GetMenuItems(c *fiber.Ctx) error {
 func (h *MenuHandler) GetMenuItemByID(c *fiber.Ctx) error {
 	id := c.Params("id")
 	var menuItem models.Menu
-	if err := h.DB.First(&menuItem, id).Error; err != nil {
+	if err := h.DB.Where("item_id = ?", id).First(&menuItem).Error; err != nil {
 		return c.Status(404).JSON(fiber.Map{"error": "Menu item not found"})
 	}
 	return c.JSON(menuItem)
