@@ -1,8 +1,7 @@
 package cart
 
 import (
-	"encoding/json"
-	"errors"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/saanvi-iyer/gobblego-backend/models"
@@ -15,92 +14,80 @@ func NewCartRepo() Repository {
 	return &cartRepo{}
 }
 
-func (r *cartRepo) CreateCartItem(db *gorm.DB, cart *models.Cart, item *models.CartItem) error {
-	var items []models.CartItem
-
-	if len(cart.Items) > 0 {
-		if err := json.Unmarshal(cart.Items, &items); err != nil {
-			return err
-		}
+func (r *cartRepo) CreateCart(db *gorm.DB, cart *models.Cart) error {
+	if cart.CartID == uuid.Nil {
+		cart.CartID = uuid.New()
 	}
-
-	items = append(items, *item)
-
-	updatedItems, err := json.Marshal(items)
-	if err != nil {
-		return err
-	}
-
-	cart.Items = updatedItems
-	return db.Save(cart).Error
+	cart.CreatedAt = time.Now()
+	cart.UpdatedAt = time.Now()
+	return db.Create(cart).Error
 }
 
-func (r *cartRepo) GetCartByID(db *gorm.DB, id string) (*models.Cart, error) {
+func (r *cartRepo) GetCartByID(db *gorm.DB, id uuid.UUID) (*models.Cart, error) {
 	var cart models.Cart
-	uid, err := uuid.Parse(id)
-	if err != nil {
-		return nil, err
-	}
-	err = db.Where("cart_id = ?", uid).First(&cart).Error
+	err := db.Where("cart_id = ?", id).First(&cart).Error
 	return &cart, err
 }
 
-func (r *cartRepo) AddToCart(db *gorm.DB, cartID uuid.UUID, item *models.CartItem) error {
-	var cart models.Cart
-
-	if err := db.Where("cart_id = ?", cartID).First(&cart).Error; err != nil {
-		return err
-	}
-
-	var items []models.CartItem
-	if len(cart.Items) > 0 {
-		if err := json.Unmarshal(cart.Items, &items); err != nil {
-			return errors.New("failed to unmarshal existing items in cart")
-		}
-	}
-
-	items = append(items, *item)
-
-	updatedItems, err := json.Marshal(items)
-	if err != nil {
-		return err
-	}
-
-	cart.Items = updatedItems
-	return db.Save(&cart).Error
-}
-func (r *cartRepo) ListCartItems(db *gorm.DB, cartID uuid.UUID) ([]models.CartItem, error) {
-	var cart models.Cart
-	err := db.Where("cart_id = ?", cartID).First(&cart).Error
-	if err != nil {
-		return nil, err
-	}
-
-	var items []models.CartItem
-	if len(cart.Items) > 0 {
-		if err := json.Unmarshal(cart.Items, &items); err != nil {
-			return nil, errors.New("failed to parse cart items")
-		}
-	}
-
-	return items, nil
+func (r *cartRepo) UpdateCart(db *gorm.DB, cart *models.Cart) error {
+	cart.UpdatedAt = time.Now()
+	return db.Save(cart).Error
 }
 
-func (r *cartRepo) GetAllCarts(db *gorm.DB) ([]models.Cart, error) {
-	var carts []models.Cart
-	err := db.Find(&carts).Error
+func (r *cartRepo) AddCartItem(db *gorm.DB, item *models.CartItem) error {
+	if item.CartItemID == uuid.Nil {
+		item.CartItemID = uuid.New()
+	}
+	item.CreatedAt = time.Now()
+	item.UpdatedAt = time.Now()
+	return db.Create(item).Error
+}
+
+func (r *cartRepo) GetCartItems(db *gorm.DB, cartID uuid.UUID) ([]models.CartItem, error) {
+	var items []models.CartItem
+	err := db.Where("cart_id = ?", cartID).Find(&items).Error
+	return items, err
+}
+
+func (r *cartRepo) GetCartItemByID(db *gorm.DB, id uuid.UUID) (*models.CartItem, error) {
+	var item models.CartItem
+	err := db.Where("cart_item_id = ?", id).First(&item).Error
+	return &item, err
+}
+
+func (r *cartRepo) UpdateCartItem(db *gorm.DB, item *models.CartItem) error {
+	item.UpdatedAt = time.Now()
+	return db.Save(item).Error
+}
+
+func (r *cartRepo) DeleteCartItem(db *gorm.DB, id uuid.UUID) error {
+	return db.Delete(&models.CartItem{}, "cart_item_id = ?", id).Error
+}
+
+func (r *cartRepo) ClearCartItems(db *gorm.DB, cartID uuid.UUID) error {
+	return db.Delete(&models.CartItem{}, "cart_id = ?", cartID).Error
+}
+
+func (r *cartRepo) UpdateCartTotal(db *gorm.DB, cartID uuid.UUID) error {
+	var total float64
+
+	rows, err := db.Raw(`
+	SELECT SUM(ci.item_price * ci.quantity) 
+	FROM cart_items ci 
+	WHERE ci.cart_id = ?::uuid
+	`, cartID.String()).Rows()
+
 	if err != nil {
-		return nil, err
+		return err
+	}
+	defer rows.Close()
+
+	if rows.Next() {
+		rows.Scan(&total)
 	}
 
-	for i := range carts {
-		var items []models.CartItem
-		if len(carts[i].Items) > 0 {
-			if err := json.Unmarshal(carts[i].Items, &items); err != nil {
-				return nil, errors.New("failed to parse cart items")
-			}
-		}
-	}
-
-	return carts, nil
+	return db.Model(&models.Cart{}).Where("cart_id = ?", cartID).Updates(map[string]interface{}{
+		"bill_amount": total,
+		"updated_at":  time.Now(),
+	}).Error
 }

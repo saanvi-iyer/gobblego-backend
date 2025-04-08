@@ -10,25 +10,35 @@ import (
 func main() {
 	db := config.InitDB()
 
-	err_menu := db.AutoMigrate(&models.Menu{})
-	if err_menu != nil {
-		log.Fatal("Failed to migrate Menu table:", err_menu)
+	if err := db.AutoMigrate(&models.Menu{}); err != nil {
+		log.Fatal("Failed to migrate Menu table:", err)
 	}
+	log.Println("Menu table migrated successfully")
 
-	err_cart := db.AutoMigrate(&models.Cart{})
-	if err_cart != nil {
-		log.Fatal("Failed to migrate Cart table:", err_cart)
+	if err := db.AutoMigrate(&models.Cart{}); err != nil {
+		log.Fatal("Failed to migrate Cart table:", err)
 	}
+	log.Println("Cart table migrated successfully")
 
-	err_user := db.AutoMigrate(&models.User{})
-	if err_user != nil {
-		log.Fatal("Failed to migrate User table:", err_user)
+	if err := db.AutoMigrate(&models.User{}); err != nil {
+		log.Fatal("Failed to migrate User table:", err)
 	}
+	log.Println("User table migrated successfully")
 
-	db.AutoMigrate(&models.Order{})
-	if err_user != nil {
-		log.Fatal("Failed to migrate Order table:", err_user)
+	if err := db.AutoMigrate(&models.CartItem{}); err != nil {
+		log.Fatal("Failed to migrate CartItem table:", err)
 	}
+	log.Println("CartItem table migrated successfully")
 
-	log.Println("Database migrations completed successfully")
+	if err := db.AutoMigrate(&models.Order{}); err != nil {
+		log.Fatal("Failed to migrate Order table:", err)
+	}
+	log.Println("Order table migrated successfully")
+
+	if err := db.AutoMigrate(&models.OrderItem{}); err != nil {
+		log.Fatal("Failed to migrate OrderItem table:", err)
+	}
+	log.Println("OrderItem table migrated successfully")
+
+	log.Println("All database migrations completed successfully")
 }

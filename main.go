@@ -1,3 +1,4 @@
+// main.go
 package main
 
 import (
@@ -7,6 +8,10 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/saanvi-iyer/gobblego-backend/api"
 	"github.com/saanvi-iyer/gobblego-backend/config"
+	"github.com/saanvi-iyer/gobblego-backend/internal/cart"
+	"github.com/saanvi-iyer/gobblego-backend/internal/menu"
+	"github.com/saanvi-iyer/gobblego-backend/internal/order"
+	"github.com/saanvi-iyer/gobblego-backend/middleware"
 	"github.com/saanvi-iyer/gobblego-backend/routes"
 )
 
@@ -21,17 +26,25 @@ func main() {
 		AllowCredentials: true,
 	}))
 
-	MenuHandler := api.NewMenuHandler(db.DB)
-	routes.MountMenuRoutes(app, MenuHandler)
+	// Initialize repositories
+	menuRepo := menu.NewMenuRepo()
+	cartRepo := cart.NewCartRepo()
+	orderRepo := order.NewOrderRepo()
 
-	CartHandler := api.NewCartHandler(db.DB)
-	routes.MountCartRoutes(app, CartHandler)
+	// Initialize handlers
+	menuHandler := api.NewMenuHandler(db.DB, menuRepo)
+	cartHandler := api.NewCartHandler(db.DB, cartRepo, menuRepo)
+	userHandler := api.NewUserHandler(db.DB, cartHandler)
+	orderHandler := api.NewOrderHandler(db.DB, orderRepo, cartRepo, menuRepo)
 
-	UserHandler := api.NewUserHandler(db.DB, CartHandler)
-	routes.MountUserRoutes(app, UserHandler)
+	// Create auth middleware
+	authMiddleware := middleware.Authenticate(db.DB)
 
-	orderHandler := api.NewOrderHandler(db.DB)
-	routes.MountOrderRoutes(app, orderHandler)
+	// Mount routes
+	routes.MountMenuRoutes(app, menuHandler)
+	routes.MountCartRoutes(app, cartHandler, authMiddleware)
+	routes.MountUserRoutes(app, userHandler)
+	routes.MountOrderRoutes(app, orderHandler, authMiddleware)
 
 	app.Get("/ping", func(c *fiber.Ctx) error {
 		return c.JSON(fiber.Map{"message": "Pong", "status": 200})

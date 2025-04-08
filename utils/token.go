@@ -1,14 +1,25 @@
 package utils
 
 import (
+	"errors"
+	"os"
 	"time"
 
-	"github.com/golang-jwt/jwt"
+	"github.com/golang-jwt/jwt/v4"
 	"github.com/saanvi-iyer/gobblego-backend/models"
 )
 
-func GenerateToken(user models.User) (string, error) {
+var jwtSecret = []byte(getJWTSecret())
 
+func getJWTSecret() string {
+	secret := os.Getenv("JWT_SECRET")
+	if secret == "" {
+		return "your-default-secret-key"
+	}
+	return secret
+}
+
+func GenerateToken(user models.User) (string, error) {
 	claims := jwt.MapClaims{
 		"user_id":   user.UserID.String(),
 		"cart_id":   user.CartID.String(),
@@ -18,10 +29,25 @@ func GenerateToken(user models.User) (string, error) {
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	return token.SignedString(jwtSecret)
+}
 
-	// TODO: Use environment variable for secret key in production
-	secretKey := []byte("abcdef")
-	tokenString, err := token.SignedString(secretKey)
+func VerifyToken(tokenString string) (jwt.MapClaims, error) {
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 
-	return tokenString, err
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, errors.New("unexpected signing method")
+		}
+		return jwtSecret, nil
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+		return claims, nil
+	}
+
+	return nil, errors.New("invalid token")
 }

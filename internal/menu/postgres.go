@@ -1,8 +1,8 @@
 package menu
 
 import (
-	"github.com/saanvi-iyer/gobblego-backend/models"
 	"github.com/google/uuid"
+	"github.com/saanvi-iyer/gobblego-backend/models"
 	"gorm.io/gorm"
 )
 
@@ -25,13 +25,13 @@ func (r *menuRepo) GetMenuByID(db *gorm.DB, id string) (*models.Menu, error) {
 	if err != nil {
 		return nil, err
 	}
-	err = db.Where("menu_id = ?", uid).Where("deleted_at IS NULL").First(&menu).Error
+	err = db.Where("item_id = ?", uid).First(&menu).Error
 	return &menu, err
 }
 
 func (r *menuRepo) ListMenus(db *gorm.DB, limit, offset int) ([]models.Menu, error) {
 	var menus []models.Menu
-	err := db.Where("deleted_at IS NULL").Limit(limit).Offset(offset).Find(&menus).Error
+	err := db.Limit(limit).Offset(offset).Find(&menus).Error
 	return menus, err
 }
 

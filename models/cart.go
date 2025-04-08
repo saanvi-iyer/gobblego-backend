@@ -1,20 +1,31 @@
 package models
 
 import (
-	"encoding/json"
+	"time"
 
 	"github.com/google/uuid"
 )
 
-type CartItem struct {
-	ItemID   uuid.UUID   `json:"item_id"`
-	UserIDs  []uuid.UUID `json:"user_ids"`
-	Quantity int         `json:"quantity"`
+type Cart struct {
+	CartID        uuid.UUID `gorm:"primaryKey;type:uuid"       json:"cart_id"`
+	PaymentStatus string    `gorm:"not null;default:'pending'" json:"payment_status"`
+	BillAmount    float64   `gorm:"not null;default:0"         json:"bill_amount"`
+	CreatedAt     time.Time `                                  json:"created_at"`
+	UpdatedAt     time.Time `                                  json:"updated_at"`
 }
 
-type Cart struct {
-	CartID        uuid.UUID       `gorm:"type:uuid;primaryKey;default:gen_random_uuid()" json:"cart_id"`
-	Items         json.RawMessage `gorm:"type:jsonb"                                     json:"items"`
-	PaymentStatus string          `gorm:"not null"                                       json:"payment_status"`
-	BillAmount    float64         `gorm:"not null"                                       json:"bill_amount"`
+type CartItem struct {
+	CartItemID uuid.UUID `gorm:"primaryKey;type:uuid" json:"cart_item_id"`
+	CartID     uuid.UUID `gorm:"type:uuid;not null"   json:"cart_id"`
+	ItemID     uuid.UUID `gorm:"type:uuid;not null"   json:"item_id"`
+	UserID     uuid.UUID `gorm:"type:uuid;not null"   json:"user_id"`
+	Quantity   int       `gorm:"not null;default:1"   json:"quantity"`
+	ItemPrice  float64   `gorm:"not null"             json:"item_price"`
+	Notes      string    `                            json:"notes"`
+	CreatedAt  time.Time `                            json:"created_at"`
+	UpdatedAt  time.Time `                            json:"updated_at"`
+
+	Cart Cart `gorm:"foreignKey:CartID;references:CartID" json:"-"`
+	Item Menu `gorm:"foreignKey:ItemID;references:ItemID" json:"-"`
+	User User `gorm:"foreignKey:UserID;references:UserID" json:"-"`
 }

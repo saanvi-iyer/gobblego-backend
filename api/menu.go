@@ -3,16 +3,21 @@ package api
 import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
+	"github.com/saanvi-iyer/gobblego-backend/internal/menu"
 	"github.com/saanvi-iyer/gobblego-backend/models"
 	"gorm.io/gorm"
 )
 
 type MenuHandler struct {
-	DB *gorm.DB
+	DB       *gorm.DB
+	MenuRepo menu.Repository
 }
 
-func NewMenuHandler(db *gorm.DB) *MenuHandler {
-	return &MenuHandler{DB: db}
+func NewMenuHandler(db *gorm.DB, menuRepo menu.Repository) *MenuHandler {
+	return &MenuHandler{
+		DB:       db,
+		MenuRepo: menuRepo,
+	}
 }
 
 func (h *MenuHandler) GetMenuItems(c *fiber.Ctx) error {
@@ -37,7 +42,7 @@ func (h *MenuHandler) CreateMenuItem(c *fiber.Ctx) error {
 	if err := c.BodyParser(&menuItem); err != nil {
 		return c.Status(400).JSON(fiber.Map{"error": "Invalid input"})
 	}
-	menuItem.ItemID=uuid.New()
+	menuItem.ItemID = uuid.New()
 	if err := h.DB.Create(&menuItem).Error; err != nil {
 		return c.Status(500).JSON(fiber.Map{"error": "Failed to create menu item"})
 	}

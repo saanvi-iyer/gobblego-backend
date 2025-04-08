@@ -7,8 +7,15 @@ import (
 )
 
 type Repository interface {
-	AddToCart(db *gorm.DB, cartID uuid.UUID, item *models.CartItem) error
-	GetCartByID(db *gorm.DB, id string) (*models.Cart, error)
-	ListCartItems(db *gorm.DB, cartID uuid.UUID) ([]models.CartItem, error)
-	GetAllCarts(db *gorm.DB) ([]models.Cart, error)
+	CreateCart(db *gorm.DB, cart *models.Cart) error
+	GetCartByID(db *gorm.DB, id uuid.UUID) (*models.Cart, error)
+	UpdateCart(db *gorm.DB, cart *models.Cart) error
+
+	AddCartItem(db *gorm.DB, item *models.CartItem) error
+	GetCartItems(db *gorm.DB, cartID uuid.UUID) ([]models.CartItem, error)
+	GetCartItemByID(db *gorm.DB, id uuid.UUID) (*models.CartItem, error)
+	UpdateCartItem(db *gorm.DB, item *models.CartItem) error
+	DeleteCartItem(db *gorm.DB, id uuid.UUID) error
+	ClearCartItems(db *gorm.DB, cartID uuid.UUID) error
+	UpdateCartTotal(db *gorm.DB, cartID uuid.UUID) error
 }

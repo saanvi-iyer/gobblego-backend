@@ -5,9 +5,13 @@ import (
 	"github.com/saanvi-iyer/gobblego-backend/api"
 )
 
-func MountCartRoutes(app *fiber.App, handler *api.CartHandler) {
+func MountCartRoutes(app *fiber.App, handler *api.CartHandler, authMiddleware fiber.Handler) {
 	cart := app.Group("/api/v1/cart")
-	cart.Get("/", handler.GetAllCarts)
-	cart.Post("/", handler.AddToCart)
-	cart.Patch("/", handler.UpdateCartItem)
+
+	cart.Use(authMiddleware)
+
+	cart.Post("/items", handler.AddItemToCart)
+	cart.Get("/items", handler.GetCartItems)
+	cart.Delete("/items/:cart_item_id", handler.RemoveItemFromCart)
+	cart.Put("/items/:cart_item_id", handler.UpdateCartItemQuantity)
 }
