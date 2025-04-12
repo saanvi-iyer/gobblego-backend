@@ -12,4 +12,5 @@ type Repository interface {
 	GetOrdersByCartID(db *gorm.DB, cartID uuid.UUID) ([]models.Order, error)
 	UpdateOrderStatus(db *gorm.DB, id uuid.UUID, status string) error
 	GetOrderItems(db *gorm.DB, orderID uuid.UUID) ([]models.OrderItem, error)
+	GetTotalAmountForPendingOrders(db *gorm.DB, cartID uuid.UUID) (float64, error)
 }

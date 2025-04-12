@@ -1,10 +1,13 @@
 package api
 
 import (
+	"fmt"
+	"os"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
+	razorpay "github.com/razorpay/razorpay-go"
 	"github.com/saanvi-iyer/gobblego-backend/internal/cart"
 	"github.com/saanvi-iyer/gobblego-backend/internal/menu"
 	"github.com/saanvi-iyer/gobblego-backend/internal/order"
@@ -24,7 +27,9 @@ func NewOrderHandler(
 	orderRepo order.Repository,
 	cartRepo cart.Repository,
 	menuRepo menu.Repository,
+
 ) *OrderHandler {
+
 	return &OrderHandler{
 		DB:        db,
 		OrderRepo: orderRepo,
@@ -39,6 +44,8 @@ func (h *OrderHandler) PlaceOrder(c *fiber.Ctx) error {
 	if !ok {
 		return c.Status(401).JSON(fiber.Map{"error": "Unauthorized"})
 	}
+
+	fmt.Print(user)
 
 	if !user.IsLeader {
 		return c.Status(403).JSON(fiber.Map{"error": "Only the table leader can place orders"})
@@ -226,4 +233,82 @@ func (h *OrderHandler) UpdateOrderStatus(c *fiber.Ctx) error {
 	}
 
 	return c.JSON(order)
+}
+
+func (h *OrderHandler) Checkout(c *fiber.Ctx) error {
+	user, ok := c.Locals("user").(models.User)
+	if !ok {
+		return c.Status(401).JSON(fiber.Map{"error": "Unauthorized"})
+	}
+
+	var totalAmount float64
+	err := h.DB.Model(&models.Order{}).
+		Where("cart_id = ? AND status = ?", user.CartID, "pending").
+		Select("SUM(total_amount)").
+		Row().
+		Scan(&totalAmount)
+	if err != nil {
+		return c.Status(500).
+			JSON(fiber.Map{"error": "Failed to fetch total amount", "details": err.Error()})
+	}
+
+	if totalAmount <= 0 {
+		return c.Status(400).JSON(fiber.Map{"error": "Invalid total amount"})
+	}
+
+	amountInPaise := int(totalAmount * 100)
+
+	orderData := map[string]interface{}{
+		"amount":   amountInPaise,
+		"currency": "INR",
+		"receipt":  "r_" + uuid.New().String(),
+	}
+
+	rzpKey := os.Getenv("RAZORPAY_KEY_ID")
+	rzpSecret := os.Getenv("RAZORPAY_KEY_SECRET")
+
+	if rzpKey == "" || rzpSecret == "" {
+		return c.Status(500).JSON(fiber.Map{"error": "Razorpay API keys not set"})
+	}
+
+	client := razorpay.NewClient(rzpKey, rzpSecret)
+
+	rzpOrder, err := client.Order.Create(orderData, nil)
+	if err != nil {
+		return c.Status(500).
+			JSON(fiber.Map{"error": "Failed to create Razorpay order", "details": err.Error()})
+	}
+
+	payment := models.Payment{
+		PaymentID:       uuid.New(),
+		CartID:          user.CartID,
+		RazorpayOrderID: rzpOrder["id"].(string),
+		Amount:          float64(amountInPaise),
+		Currency:        "INR",
+		Status:          "created",
+		CreatedAt:       time.Now(),
+		UpdatedAt:       time.Now(),
+	}
+
+	if err := h.DB.Create(&payment).Error; err != nil {
+		return c.Status(500).
+			JSON(fiber.Map{"error": "Failed to save payment details", "details": err.Error()})
+	}
+
+	if err := h.DB.Model(&models.Cart{}).Where("cart_id = ?", user.CartID).Update("payment_status", "initiated").Error; err != nil {
+		return c.Status(500).
+			JSON(fiber.Map{"error": "Failed to update cart status", "details": err.Error()})
+	}
+
+	if err := h.DB.Model(&models.Order{}).Where("cart_id = ? AND status = ?", user.CartID, "pending").Update("status", "payment_initiated").Error; err != nil {
+		return c.Status(500).
+			JSON(fiber.Map{"error": "Failed to update order status", "details": err.Error()})
+	}
+
+	return c.JSON(fiber.Map{
+		"payment_id":        payment.PaymentID,
+		"razorpay_order_id": payment.RazorpayOrderID,
+		"amount":            payment.Amount,
+		"currency":          payment.Currency,
+	})
 }

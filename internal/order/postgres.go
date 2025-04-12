@@ -31,6 +31,7 @@ func (r *orderRepo) CreateOrder(db *gorm.DB, order *models.Order, items []models
 	for i := range items {
 		items[i].OrderID = order.OrderID
 		items[i].OrderItemID = uuid.New()
+		items[i].CartID = order.CartID
 
 		if err := tx.Create(&items[i]).Error; err != nil {
 			tx.Rollback()
@@ -64,4 +65,14 @@ func (r *orderRepo) GetOrderItems(db *gorm.DB, orderID uuid.UUID) ([]models.Orde
 	var items []models.OrderItem
 	err := db.Where("order_id = ?", orderID).Find(&items).Error
 	return items, err
+}
+
+func (r *orderRepo) GetTotalAmountForPendingOrders(db *gorm.DB, cartID uuid.UUID) (float64, error) {
+	var totalAmount float64
+	err := db.Model(&models.Order{}).
+		Where("cart_id = ? AND status = ?", cartID, "pending").
+		Select("SUM(total_amount)").
+		Row().
+		Scan(&totalAmount)
+	return totalAmount, err
 }

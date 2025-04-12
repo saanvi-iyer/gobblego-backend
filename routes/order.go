@@ -14,4 +14,5 @@ func MountOrderRoutes(app *fiber.App, handler *api.OrderHandler, authMiddleware 
 	orders.Get("/", handler.GetOrders)
 	orders.Get("/:order_id", handler.GetOrderDetails)
 	orders.Put("/:order_id/status", handler.UpdateOrderStatus)
+	orders.Post("/checkout", handler.Checkout)
 }

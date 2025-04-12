@@ -5,8 +5,13 @@ go 1.22.2
 require gorm.io/datatypes v1.2.5
 
 require (
+	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/gofiber/utils v0.0.10 // indirect
 	github.com/gorilla/schema v1.1.0 // indirect
+	github.com/pmezard/go-difflib v1.0.0 // indirect
+	github.com/razorpay/razorpay-go v1.3.2 // indirect
+	github.com/stretchr/testify v1.8.1 // indirect
+	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
 
 require (

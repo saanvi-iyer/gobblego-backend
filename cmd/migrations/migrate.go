@@ -38,6 +38,11 @@ func main() {
 	if err := db.AutoMigrate(&models.OrderItem{}); err != nil {
 		log.Fatal("Failed to migrate OrderItem table:", err)
 	}
+
+	log.Println("OrderItem table migrated successfully")
+	if err := db.AutoMigrate(&models.Payment{}); err != nil {
+		log.Fatal("Failed to migrate Payment table:", err)
+	}
 	log.Println("OrderItem table migrated successfully")
 
 	log.Println("All database migrations completed successfully")

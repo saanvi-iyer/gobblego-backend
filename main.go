@@ -36,6 +36,7 @@ func main() {
 	cartHandler := api.NewCartHandler(db.DB, cartRepo, menuRepo)
 	userHandler := api.NewUserHandler(db.DB, cartHandler)
 	orderHandler := api.NewOrderHandler(db.DB, orderRepo, cartRepo, menuRepo)
+	paymentHandler := api.NewPaymentHandler(db.DB)
 
 	// Create auth middleware
 	authMiddleware := middleware.Authenticate(db.DB)
@@ -45,6 +46,7 @@ func main() {
 	routes.MountCartRoutes(app, cartHandler, authMiddleware)
 	routes.MountUserRoutes(app, userHandler)
 	routes.MountOrderRoutes(app, orderHandler, authMiddleware)
+	routes.MountPaymentRoutes(app, paymentHandler, authMiddleware)
 
 	app.Get("/ping", func(c *fiber.Ctx) error {
 		return c.JSON(fiber.Map{"message": "Pong", "status": 200})

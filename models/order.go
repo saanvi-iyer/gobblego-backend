@@ -22,6 +22,7 @@ type Order struct {
 type OrderItem struct {
 	OrderItemID uuid.UUID `gorm:"primaryKey;type:uuid" json:"order_item_id"`
 	OrderID     uuid.UUID `gorm:"type:uuid;not null"   json:"order_id"`
+	CartID      uuid.UUID `gorm:"type:uuid;not null"   json:"cart_id"`
 	ItemID      uuid.UUID `gorm:"type:uuid;not null"   json:"item_id"`
 	Quantity    int       `gorm:"not null"             json:"quantity"`
 	Price       float64   `gorm:"not null"             json:"price"`
@@ -29,4 +30,5 @@ type OrderItem struct {
 
 	Order Order `gorm:"foreignKey:OrderID;references:OrderID" json:"-"`
 	Item  Menu  `gorm:"foreignKey:ItemID;references:ItemID"   json:"-"`
+	Cart  Cart  `gorm:"foreignKey:CartID;references:CartID"   json:"-"`
 }

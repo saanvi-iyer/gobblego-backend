@@ -1,6 +1,8 @@
 package middleware
 
 import (
+	"fmt"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/saanvi-iyer/gobblego-backend/models"
 	"github.com/saanvi-iyer/gobblego-backend/utils"
@@ -34,6 +36,9 @@ func Authenticate(db *gorm.DB) fiber.Handler {
 		}
 
 		c.Locals("user", user)
+
+		fmt.Print(user)
+		fmt.Println("User authenticated")
 
 		return c.Next()
 	}
