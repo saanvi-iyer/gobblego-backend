@@ -25,6 +25,23 @@ func NewCartHandler(db *gorm.DB, cartRepo cart.Repository, menuRepo menu.Reposit
 	}
 }
 
+func (h *CartHandler) CreateCart(c *fiber.Ctx) error {
+
+	newCart := models.Cart{
+		CartID:        uuid.New(),
+		PaymentStatus: "pending",
+		BillAmount:    0,
+		CreatedAt:     time.Now(),
+		UpdatedAt:     time.Now(),
+	}
+
+	if err := h.CartRepo.CreateCart(h.DB, &newCart); err != nil {
+		return c.Status(500).JSON(fiber.Map{"error": "Failed to create cart"})
+	}
+
+	return c.Status(201).JSON(newCart)
+}
+
 func (h *CartHandler) AddItemToCart(c *fiber.Ctx) error {
 
 	user, ok := c.Locals("user").(models.User)

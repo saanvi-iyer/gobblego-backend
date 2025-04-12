@@ -52,7 +52,7 @@ func (h *MenuHandler) CreateMenuItem(c *fiber.Ctx) error {
 func (h *MenuHandler) UpdateMenuItem(c *fiber.Ctx) error {
 	id := c.Params("id")
 	var menuItem models.Menu
-	if err := h.DB.First(&menuItem, id).Error; err != nil {
+	if err := h.DB.Where("item_id = ?", id).First(&menuItem).Error; err != nil {
 		return c.Status(404).JSON(fiber.Map{"error": "Menu item not found"})
 	}
 
@@ -66,7 +66,7 @@ func (h *MenuHandler) UpdateMenuItem(c *fiber.Ctx) error {
 
 func (h *MenuHandler) DeleteMenuItem(c *fiber.Ctx) error {
 	id := c.Params("id")
-	if err := h.DB.Delete(&models.Menu{}, id).Error; err != nil {
+	if err := h.DB.Where("item_id = ?", id).Delete(&models.Menu{}).Error; err != nil {
 		return c.Status(500).JSON(fiber.Map{"error": "Failed to delete menu item"})
 	}
 	return c.JSON(fiber.Map{"message": "Menu item deleted successfully"})
