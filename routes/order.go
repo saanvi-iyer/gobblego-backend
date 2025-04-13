@@ -7,6 +7,7 @@ import (
 
 func MountOrderRoutes(app *fiber.App, handler *api.OrderHandler, authMiddleware fiber.Handler) {
 	orders := app.Group("/api/v1/orders")
+	orders.Get("/all", handler.GetAllOrders)
 
 	orders.Use(authMiddleware)
 

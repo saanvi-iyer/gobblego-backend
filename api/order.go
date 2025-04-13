@@ -123,6 +123,14 @@ func (h *OrderHandler) PlaceOrder(c *fiber.Ctx) error {
 	})
 }
 
+func (h *OrderHandler) GetAllOrders(c *fiber.Ctx) error {
+	orders, err := h.OrderRepo.GetAllOrders(h.DB)
+	if err != nil {
+		return c.Status(500).JSON(fiber.Map{"error": "Failed to fetch orders"})
+	}
+	return c.JSON(orders)
+}
+
 func (h *OrderHandler) GetOrders(c *fiber.Ctx) error {
 
 	user, ok := c.Locals("user").(models.User)
