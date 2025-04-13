@@ -200,11 +200,6 @@ func (h *OrderHandler) GetOrderDetails(c *fiber.Ctx) error {
 
 func (h *OrderHandler) UpdateOrderStatus(c *fiber.Ctx) error {
 
-	_, ok := c.Locals("user").(models.User)
-	if !ok {
-		return c.Status(401).JSON(fiber.Map{"error": "Unauthorized"})
-	}
-
 	orderID := c.Params("order_id")
 	oid, err := uuid.Parse(orderID)
 	if err != nil {
@@ -221,10 +216,13 @@ func (h *OrderHandler) UpdateOrderStatus(c *fiber.Ctx) error {
 	}
 
 	validStatuses := map[string]bool{
-		"pending":   true,
-		"preparing": true,
-		"ready":     true,
-		"delivered": true,
+		"pending":             true,
+		"preparing":           true,
+		"ready":               true,
+		"payment_failed":      true,
+		"payment_initialized": true,
+		"served":              true,
+		"completed":           true,
 	}
 
 	if !validStatuses[req.Status] {
