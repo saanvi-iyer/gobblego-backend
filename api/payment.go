@@ -1,6 +1,7 @@
 package api
 
 import (
+	"fmt"
 	"os"
 	"time"
 
@@ -28,7 +29,6 @@ func NewPaymentHandler(db *gorm.DB) *PaymentHandler {
 		RzpClient: client,
 	}
 }
-
 func (h *PaymentHandler) VerifyPayment(c *fiber.Ctx) error {
 	type VerifyRequest struct {
 		PaymentID         string `json:"payment_id"`
@@ -70,6 +70,13 @@ func (h *PaymentHandler) VerifyPayment(c *fiber.Ctx) error {
 			"updated_at":          time.Now(),
 		})
 
+		if err := h.DB.Model(&models.Order{}).
+			Where("cart_id = ? AND status = ?", payment.CartID, "payment_initiated").
+			Update("status", "payment_failed").Error; err != nil {
+
+			fmt.Printf("Failed to update order status: %v\n", err)
+		}
+
 		return c.Status(400).JSON(fiber.Map{"error": "Payment verification failed"})
 	}
 
@@ -81,8 +88,16 @@ func (h *PaymentHandler) VerifyPayment(c *fiber.Ctx) error {
 		return c.Status(500).JSON(fiber.Map{"error": "Failed to update payment status"})
 	}
 
-	if err := h.DB.Model(&models.Cart{}).Where("cart_id = ?", payment.CartID).Update("payment_status", "completed").Error; err != nil {
+	if err := h.DB.Model(&models.Cart{}).
+		Where("cart_id = ?", payment.CartID).
+		Update("payment_status", "completed").Error; err != nil {
 		return c.Status(500).JSON(fiber.Map{"error": "Failed to update cart status"})
+	}
+
+	if err := h.DB.Model(&models.Order{}).
+		Where("cart_id = ? AND status = ?", payment.CartID, "payment_initiated").
+		Update("status", "completed").Error; err != nil {
+		return c.Status(500).JSON(fiber.Map{"error": "Failed to update order status"})
 	}
 
 	return c.JSON(fiber.Map{

@@ -1,4 +1,3 @@
-// main.go
 package main
 
 import (
@@ -26,22 +25,18 @@ func main() {
 		AllowCredentials: true,
 	}))
 
-	// Initialize repositories
 	menuRepo := menu.NewMenuRepo()
 	cartRepo := cart.NewCartRepo()
 	orderRepo := order.NewOrderRepo()
 
-	// Initialize handlers
 	menuHandler := api.NewMenuHandler(db.DB, menuRepo)
 	cartHandler := api.NewCartHandler(db.DB, cartRepo, menuRepo)
 	userHandler := api.NewUserHandler(db.DB, cartHandler)
 	orderHandler := api.NewOrderHandler(db.DB, orderRepo, cartRepo, menuRepo)
 	paymentHandler := api.NewPaymentHandler(db.DB)
 
-	// Create auth middleware
 	authMiddleware := middleware.Authenticate(db.DB)
 
-	// Mount routes
 	routes.MountMenuRoutes(app, menuHandler)
 	routes.MountCartRoutes(app, cartHandler, authMiddleware)
 	routes.MountUserRoutes(app, userHandler)
