@@ -50,7 +50,11 @@ func (r *orderRepo) GetOrderByID(db *gorm.DB, id uuid.UUID) (*models.Order, erro
 
 func (r *orderRepo) GetOrdersByCartID(db *gorm.DB, cartID uuid.UUID) ([]models.Order, error) {
 	var orders []models.Order
-	err := db.Where("cart_id = ?", cartID).Order("created_at desc").Find(&orders).Error
+	err := db.Preload("OrderItems.Item").
+		Where("cart_id = ?", cartID).
+		Order("created_at desc").
+		Find(&orders).
+		Error
 	return orders, err
 }
 
