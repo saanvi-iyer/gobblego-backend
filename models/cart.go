@@ -27,5 +27,5 @@ type CartItem struct {
 
 	Cart Cart `gorm:"foreignKey:CartID;references:CartID" json:"-"`
 	Item Menu `gorm:"foreignKey:ItemID;references:ItemID" json:"-"`
-	User User `gorm:"foreignKey:UserID;references:UserID" json:"-"`
+	User User `gorm:"foreignKey:UserID;references:UserID" json:"user"`
 }

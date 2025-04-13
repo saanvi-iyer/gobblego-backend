@@ -25,7 +25,7 @@ func (r *cartRepo) CreateCart(db *gorm.DB, cart *models.Cart) error {
 
 func (r *cartRepo) GetCartByID(db *gorm.DB, id uuid.UUID) (*models.Cart, error) {
 	var cart models.Cart
-	err := db.Where("cart_id = ?", id).First(&cart).Error
+	err := db.Preload("User").Where("cart_id = ?", id).First(&cart).Error
 	return &cart, err
 }
 
@@ -45,13 +45,13 @@ func (r *cartRepo) AddCartItem(db *gorm.DB, item *models.CartItem) error {
 
 func (r *cartRepo) GetCartItems(db *gorm.DB, cartID uuid.UUID) ([]models.CartItem, error) {
 	var items []models.CartItem
-	err := db.Where("cart_id = ?", cartID).Find(&items).Error
+	err := db.Preload("User").Where("cart_id = ?", cartID).Find(&items).Error
 	return items, err
 }
 
 func (r *cartRepo) GetCartItemByID(db *gorm.DB, id uuid.UUID) (*models.CartItem, error) {
 	var item models.CartItem
-	err := db.Where("cart_item_id = ?", id).First(&item).Error
+	err := db.Preload("User").Where("cart_item_id = ?", id).First(&item).Error
 	return &item, err
 }
 
