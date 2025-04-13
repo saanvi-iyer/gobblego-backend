@@ -15,8 +15,9 @@ type Order struct {
 	CreatedAt   time.Time `                                  json:"created_at"`
 	UpdatedAt   time.Time `                                  json:"updated_at"`
 
-	Cart Cart `gorm:"foreignKey:CartID;references:CartID" json:"-"`
-	User User `gorm:"foreignKey:UserID;references:UserID" json:"-"`
+	Cart       Cart        `gorm:"foreignKey:CartID;references:CartID"   json:"-"`
+	User       User        `gorm:"foreignKey:UserID;references:UserID"   json:"-"`
+	OrderItems []OrderItem `gorm:"foreignKey:OrderID;references:OrderID" json:"order_items"`
 }
 
 type OrderItem struct {
@@ -29,6 +30,6 @@ type OrderItem struct {
 	Notes       string    `                            json:"notes"`
 
 	Order Order `gorm:"foreignKey:OrderID;references:OrderID" json:"-"`
-	Item  Menu  `gorm:"foreignKey:ItemID;references:ItemID"   json:"-"`
+	Item  Menu  `gorm:"foreignKey:ItemID;references:ItemID"   json:"item"`
 	Cart  Cart  `gorm:"foreignKey:CartID;references:CartID"   json:"-"`
 }

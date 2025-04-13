@@ -79,6 +79,6 @@ func (r *orderRepo) GetTotalAmountForPendingOrders(db *gorm.DB, cartID uuid.UUID
 
 func (r *orderRepo) GetAllOrders(db *gorm.DB) ([]models.Order, error) {
 	var orders []models.Order
-	err := db.Order("created_at desc").Find(&orders).Error
+	err := db.Preload("OrderItems.Item").Order("created_at desc").Find(&orders).Error
 	return orders, err
 }
