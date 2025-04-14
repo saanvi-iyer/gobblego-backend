@@ -249,7 +249,7 @@ func (h *OrderHandler) Checkout(c *fiber.Ctx) error {
 
 	var totalAmount float64
 	err := h.DB.Model(&models.Order{}).
-		Where("cart_id = ? AND status != ?", user.CartID, "success").
+		Where("cart_id = ? AND status != ?", user.CartID, "completed").
 		Select("SUM(total_amount)").
 		Row().
 		Scan(&totalAmount)
@@ -307,7 +307,7 @@ func (h *OrderHandler) Checkout(c *fiber.Ctx) error {
 	}
 
 	if err := h.DB.Model(&models.Order{}).
-		Where("cart_id = ? AND status != ?", user.CartID, "success").
+		Where("cart_id = ? AND status != ?", user.CartID, "completed").
 		Update("status", "payment_initiated").Error; err != nil {
 		return c.Status(500).
 			JSON(fiber.Map{"error": "Failed to update order status", "details": err.Error()})

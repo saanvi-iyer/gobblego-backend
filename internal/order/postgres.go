@@ -74,7 +74,7 @@ func (r *orderRepo) GetOrderItems(db *gorm.DB, orderID uuid.UUID) ([]models.Orde
 func (r *orderRepo) GetTotalAmountForPendingOrders(db *gorm.DB, cartID uuid.UUID) (float64, error) {
 	var totalAmount float64
 	err := db.Model(&models.Order{}).
-		Where("cart_id = ? AND status = ?", cartID, "pending").
+		Where("cart_id = ? AND status != ?", cartID, "completed").
 		Select("SUM(total_amount)").
 		Row().
 		Scan(&totalAmount)
